@@ -25,17 +25,28 @@ void hookVictim()
 	stdOut << u8"victim" << endl;
 }
 
+FunctionHook hook((void*)hookVictim);
+
 void hookTarget()
 {
 	stdOut << u8"hey from hook" << endl;
 }
 
+void hookTargetAndContinue()
+{
+	stdOut << u8"hey from hook! Now continuing with original function..." << endl;
+	hook.Trampoline();
+}
+
 int32 Main(const String& programName, const FixedArray<String>& args)
 {
-	FunctionHook hook((void*)hookVictim);
-
 	hookVictim();
 	hook.Hook((void*)hookTarget);
+	hookVictim();
+	hook.UnHook();
+	hookVictim();
+
+	hook.Hook((void*)hookTargetAndContinue);
 	hookVictim();
 	hook.UnHook();
 	hookVictim();
